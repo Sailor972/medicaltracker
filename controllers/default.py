@@ -79,6 +79,7 @@ def manage_events():
                                                                                  db.events.systolic,
                                                                                  db.events.diastolic,
                                                                                  db.events.pulse,
+                                                                                 db.events.medicine,
                                                                                  db.events.dosage,
                                                                                  db.events.lbs,
                                                                                  db.events.duration,
