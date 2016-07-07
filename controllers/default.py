@@ -92,6 +92,7 @@ def new_event():
     db.events.systolic.show_if = (db.events.event_type == "Blood Pressure")
     db.events.diastolic.show_if = (db.events.event_type == "Blood Pressure")
     db.events.pulse.show_if = (db.events.event_type == "Blood Pressure")
+    db.events.medicine.show_if = (db.events.event_type == "Medicine")
     db.events.dosage.show_if = (db.events.event_type == "Medicine")
     db.events.event_level.show_if = (db.events.event_type.belongs("Mood", "Headache", "Nausea", "Pain"))
     db.events.duration.show_if = (db.events.event_type.belongs("Headache", "Mood", "Nausea", "Pain", "Sleep Duration"))
@@ -104,6 +105,7 @@ def new_event():
                                       "systolic",
                                       "diastolic",
                                       "pulse",
+                                      "medicine",
                                       "dosage",
                                       "lbs",
                                       "duration",
@@ -120,6 +122,7 @@ def edit_event():
     db.events.systolic.show_if = (db.events.event_type == "Blood Pressure")
     db.events.diastolic.show_if = (db.events.event_type == "Blood Pressure")
     db.events.pulse.show_if = (db.events.event_type == "Blood Pressure")
+    db.events.medicine.show_if = (db.events.event_type == "Medicine")
     db.events.dosage.show_if = (db.events.event_type == "Medicine")
     db.events.event_level.show_if = (db.events.event_type.belongs("Mood", "Headache", "Nausea", "Pain"))
     db.events.duration.show_if = (db.events.event_type.belongs("Headache", "Mood", "Nausea", "Pain", "Sleep Duration"))
@@ -132,6 +135,7 @@ def edit_event():
                                                 "systolic",
                                                 "diastolic",
                                                 "pulse",
+                                                "medicine",
                                                 "dosage",
                                                 "lbs",
                                                 "duration",
@@ -139,4 +143,35 @@ def edit_event():
     if form.process().accepted:
         response.flash='Thanks for editing the form'
         redirect(URL('manage_events'))
+    return dict(form=form)
+
+
+@auth.requires_login()
+def manage_medicines():
+    if 'new' in request.args:
+        redirect(URL('new_medicine'))
+    elif 'edit' in request.args:
+        redirect(URL('edit_medicine', args=[request.args(2)]))
+    form = SQLFORM.grid(db.medicines, searchable=True, editable=True, deletable=True, details=False,
+                             create=True, paginate=20, maxtextlength=60, fields=[db.medicines.medicine_name],
+                             orderby=db.medicines.medicine_name)
+    return dict(form=form)
+
+
+@auth.requires_login()
+def new_medicine():
+    form = SQLFORM(db.medicines, fields=["medicine_name"])
+    if form.process().accepted:
+        response.flash = 'Thanks for filling out the form'
+        redirect(URL('manage_medicines'))
+    return dict(form=form)
+
+
+@auth.requires_login()
+def edit_medicine():
+    this_medicine = db.medicines(db.medicines.id==request.args(0,cast=int))
+    form=SQLFORM(db.medicines, this_medicine, fields=["medicine_name"])
+    if form.process().accepted:
+        response.flash='Thanks for editing the form'
+        redirect(URL('manage_medicines'))
     return dict(form=form)

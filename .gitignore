@@ -34,11 +34,11 @@ nosetests.xml
 .project
 .pydevproject
 
-.idea/
-cache/
-databases/
-errors/
-sessions/
-uploads/
+.idea
+cache
+databases
+errors
+sessions
+uploads
 views/*.bak
 views/default/*.bak

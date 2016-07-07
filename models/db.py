@@ -1,5 +1,7 @@
 import pytz
 
+user_timezone = session.plugin_timezone_tx or 'UTC'
+
 # -*- coding: utf-8 -*-
 
 # -------------------------------------------------------------------------
@@ -14,7 +16,7 @@ if request.global_settings.web2py_version < "2.14.1":
 # if SSL/HTTPS is properly configured and you want all HTTP requests to
 # be redirected to HTTPS, uncomment the line below:
 # -------------------------------------------------------------------------
-# request.requires_https()
+# request.requires_user_timezonehttps()
 
 # -------------------------------------------------------------------------
 # app configuration made easy. Look inside private/appconfig.ini
@@ -133,9 +135,14 @@ auth.settings.reset_password_requires_verification = True
 # -------------------------------------------------------------------------
 # auth.enable_record_versioning(db)
 
+db.define_table('medicines',
+                Field('medicine_name', 'string', length=40, required=True),
+                format = '%(medicine_name)s',
+                )
+
 db.define_table('events',
-                Field('event_time', 'datetime', required=True, default = request.now, update = request.now, writable = True,
-                    requires=IS_DATETIME(format=('%m-%d-%Y %H:%M'), timezone=pytz.timezone("US/Central"))),
+                Field('event_time', 'datetime', default = request.now, update = request.now,
+                    requires=IS_DATETIME(format=('%m-%d-%Y %H:%M'), timezone=pytz.timezone(user_timezone))),
                 Field('event_type', 'string', requires=IS_IN_SET(['', 'Blood Pressure', 'Headache', 'Medicine', 'Mood', 'Nausea',
                                                         'Pain', 'Sleep Duration', 'Stool', 'Weight']), default=''),
                 Field('event_level', 'string', requires=IS_EMPTY_OR(IS_IN_SET(['', '0 - Pain Free', '1 - Minor Annoyance', '2 - Moderate Annoyance', '3 - Distracting',
@@ -149,6 +156,7 @@ db.define_table('events',
                 Field('systolic', 'integer', length=3, required=False, default=''),
                 Field('diastolic', 'integer', length=3, required=False, default=''),
                 Field('pulse', 'integer', length=3, required=False, default=''),
+                Field('medicine', 'reference medicines', requires = IS_IN_DB(db, db.medicines.id, '%(medicine_name)s')),
                 Field('dosage', 'string', length=10, required=False, default=''),
                 Field('lbs', 'double', required=False, default=''),
                 Field('duration', 'string', requires=IS_EMPTY_OR(IS_IN_SET(['', ':15', ':30', ':45', '1:00', '1:15', '1:30', '1:45', '2:00', '2:15', '2:30', '2:45', '3:00',
@@ -157,4 +165,5 @@ db.define_table('events',
                 Field('note', 'text', required=False, default=''),
                )
 
+db.medicines.id.readable = False
 db.events.id.readable = False
