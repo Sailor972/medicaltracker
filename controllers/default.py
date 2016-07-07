@@ -59,3 +59,78 @@ def call():
     return service()
 
 
+@auth.requires_login()
+def manage_events():
+    if 'new' in request.args:
+        redirect(URL('new_event'))
+    elif 'edit' in request.args:
+        redirect(URL('edit_event', args=[request.args(2)]))
+    form = SQLFORM.grid(db.events, searchable=True, editable=True, deletable=True, details=False,
+                             create=True, paginate=20, maxtextlength=60, fields=[db.events.event_time,
+                                                                                 db.events.event_type,
+                                                                                 db.events.event_level,
+                                                                                 db.events.bristol_scale,
+                                                                                 db.events.systolic,
+                                                                                 db.events.diastolic,
+                                                                                 db.events.pulse,
+                                                                                 db.events.dosage,
+                                                                                 db.events.lbs,
+                                                                                 db.events.duration,
+                                                                                 db.events.note],
+                             orderby=db.events.event_time)
+    return dict(form=form)
+
+
+@auth.requires_login()
+def new_event():
+    db.events.systolic.show_if = (db.events.event_type == "Blood Pressure")
+    db.events.diastolic.show_if = (db.events.event_type == "Blood Pressure")
+    db.events.pulse.show_if = (db.events.event_type == "Blood Pressure")
+    db.events.dosage.show_if = (db.events.event_type == "Medicine")
+    db.events.event_level.show_if = (db.events.event_type.belongs("Mood", "Headache", "Nausea", "Pain"))
+    db.events.duration.show_if = (db.events.event_type.belongs("Headache", "Mood", "Nausea", "Pain", "Sleep Duration"))
+    db.events.bristol_scale.show_if = (db.events.event_type == "Stool")
+    db.events.lbs.show_if = (db.events.event_type == "Weight")
+    form = SQLFORM(db.events, fields=["event_time",
+                                      "event_type",
+                                      "event_level",
+                                      "bristol_scale",
+                                      "systolic",
+                                      "diastolic",
+                                      "pulse",
+                                      "dosage",
+                                      "lbs",
+                                      "duration",
+                                      "note"])
+    if form.process().accepted:
+        response.flash = 'Thanks for filling out the form'
+        redirect(URL('manage_events'))
+    return dict(form=form)
+
+
+@auth.requires_login()
+def edit_event():
+    this_event = db.events(db.events.id==request.args(0,cast=int))
+    db.events.systolic.show_if = (db.events.event_type == "Blood Pressure")
+    db.events.diastolic.show_if = (db.events.event_type == "Blood Pressure")
+    db.events.pulse.show_if = (db.events.event_type == "Blood Pressure")
+    db.events.dosage.show_if = (db.events.event_type == "Medicine")
+    db.events.event_level.show_if = (db.events.event_type.belongs("Mood", "Headache", "Nausea", "Pain"))
+    db.events.duration.show_if = (db.events.event_type.belongs("Headache", "Mood", "Nausea", "Pain", "Sleep Duration"))
+    db.events.bristol_scale.show_if = (db.events.event_type == "Stool")
+    db.events.lbs.show_if = (db.events.event_type == "Weight")
+    form=SQLFORM(db.events, this_event, fields=["event_time",
+                                                "event_type",
+                                                "event_level",
+                                                "bristol_scale",
+                                                "systolic",
+                                                "diastolic",
+                                                "pulse",
+                                                "dosage",
+                                                "lbs",
+                                                "duration",
+                                                "note"])
+    if form.process().accepted:
+        response.flash='Thanks for editing the form'
+        redirect(URL('manage_events'))
+    return dict(form=form)

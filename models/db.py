@@ -131,27 +131,28 @@ auth.settings.reset_password_requires_verification = True
 # -------------------------------------------------------------------------
 # auth.enable_record_versioning(db)
 
-db.define_table('event_type',
-                Field('event_name', 'string', length=30, required=True),
-                )
-
-db.define_table('bristol_level',
-                Field('level', 'string', length=30, required=True),
-                )
-
-db.define_table('event',
-                Field('event_time', 'datetime', required=True, default = request.now, update = request.now, writable = False,
+db.define_table('events',
+                Field('event_time', 'datetime', required=True, default = request.now, update = request.now, writable = True,
                     requires=IS_DATETIME(format=('%m-%d-%Y %H:%M'))),
-                Field('created_by', 'reference auth_user', required=True, default = auth.user_id, update = auth.user_id,
-                      writable = False),
-                Field('event_type', 'reference event_type', required=True),
-                Field('level', 'integer', required=False, requires=IS_INT_IN_RANGE(range(0,10))),
-                Field('bristol_level', 'reference bristol_level', required=False),
-                Field('systolic', 'integer', length=3, required=False),
-                Field('diastolic', 'integer', length=3, required=False),
-                Field('pulse', 'integer', length=3, required=False),
-                Field('dosage', 'integer', length=3, required=False),
-                Field('lbs', 'double', required=False),
-                Field('duration', 'time', required=False, requires=IS_TIME(format=('%H:%M'))),
-                Field('note', 'text', required=False),
+                Field('event_type', 'string', requires=IS_IN_SET(['', 'Blood Pressure', 'Headache', 'Medicine', 'Mood', 'Nausea',
+                                                        'Pain', 'Sleep Duration', 'Stool', 'Weight']), default=''),
+                Field('event_level', 'string', requires=IS_EMPTY_OR(IS_IN_SET(['', '0 - Pain Free', '1 - Minor Annoyance', '2 - Moderate Annoyance', '3 - Distracting',
+                                                                                   '4- Can Be Ignored', '5 - Unable To Ignore', '6 - Difficult To Focus', '7 - Unable To Sleep',
+                                                                                   '8 - Physical Activity Severely Limited', '9 - Almost Unbearable', '10 - Unbearable'])),
+                                                                                   default=''),
+                Field('bristol_scale', 'string', requires=IS_EMPTY_OR(IS_IN_SET(['', 'Type 1 - Separate hard lumps', 'Type 2 - Lumpy and sausage like',
+                                                                     'Type 3 - A sausage shape with cracks in the surface', 'Type 4 - Like a smooth, soft sausage',
+                                                                     'Type 5 - Soft blobs with clear-cut edges', 'Type 6 - Mushy consistency with ragged edges',
+                                                                     'Type 7 - Liquid consistency with no solid pieces'])), default=''),
+                Field('systolic', 'integer', length=3, required=False, default=''),
+                Field('diastolic', 'integer', length=3, required=False, default=''),
+                Field('pulse', 'integer', length=3, required=False, default=''),
+                Field('dosage', 'string', length=10, required=False, default=''),
+                Field('lbs', 'double', required=False, default=''),
+                Field('duration', 'string', requires=IS_EMPTY_OR(IS_IN_SET(['', ':15', ':30', ':45', '1:00', '1:15', '1:30', '1:45', '2:00', '2:15', '2:30', '2:45', '3:00',
+                                                                            '3:15', '3:30', '3:45', '4:00', '4:15', '4:30', '4:45', '5:00', '5:15', '5:30', '5:45', '6:00',
+                                                                            '6:15', '6:30', '6:45', '7:00', '7:15', '7:30', '7:45', '8:00', 'All Day'])), default=''),
+                Field('note', 'text', required=False, default=''),
                )
+
+db.events.id.readable = False
