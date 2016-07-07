@@ -1,3 +1,7 @@
+import pytz
+
+user_timezone = session.plugin_timezone_tz or 'UTC'
+
 # -*- coding: utf-8 -*-
 
 # -------------------------------------------------------------------------
@@ -133,7 +137,7 @@ auth.settings.reset_password_requires_verification = True
 
 db.define_table('events',
                 Field('event_time', 'datetime', required=True, default = request.now, update = request.now, writable = True,
-                    requires=IS_DATETIME(format=('%m-%d-%Y %H:%M'))),
+                    requires=IS_DATETIME(format=('%m-%d-%Y %H:%M'), timezone=pytz.timezone(user_timezone))),
                 Field('event_type', 'string', requires=IS_IN_SET(['', 'Blood Pressure', 'Headache', 'Medicine', 'Mood', 'Nausea',
                                                         'Pain', 'Sleep Duration', 'Stool', 'Weight']), default=''),
                 Field('event_level', 'string', requires=IS_EMPTY_OR(IS_IN_SET(['', '0 - Pain Free', '1 - Minor Annoyance', '2 - Moderate Annoyance', '3 - Distracting',

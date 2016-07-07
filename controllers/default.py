@@ -1,3 +1,5 @@
+from plugin_timezone import fast_tz_detector
+
 # -*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
 
@@ -58,6 +60,10 @@ def call():
     """
     return service()
 
+
+def detect_timezone():
+    tz = fast_tz_detector()
+    return dict(tz=tz)
 
 @auth.requires_login()
 def manage_events():
