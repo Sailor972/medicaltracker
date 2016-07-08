@@ -1,4 +1,5 @@
 import pytz
+from gluon.tools import prettydate
 
 user_timezone = session.plugin_timezone_tx or 'UTC'
 

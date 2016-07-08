@@ -84,7 +84,7 @@ def manage_events():
                                                                                  db.events.lbs,
                                                                                  db.events.duration,
                                                                                  db.events.note],
-                             orderby=db.events.event_time)
+                             orderby=~db.events.event_time)
     return dict(form=form)
 
 
