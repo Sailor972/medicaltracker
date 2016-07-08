@@ -31,7 +31,11 @@ response.google_analytics_id = None
 response.menu = [
     (T('Home'), False, URL('default', 'index'), []),
     (T('Manage Events'), False, URL('default', 'manage_events'), []),
-    (T('Manage Medicines'), False, URL('default', 'manage_medicines'), [])
+    (T('Manage Medicines'), False, URL('default', 'manage_medicines'), []),
+    (T('Manage bristol scales'), False, URL('default', 'manage_bristol_scales'), []),
+    (T('Manage Event Types'), False, URL('default', 'manage_event_types'), []),
+    (T('Manage Event Levels'), False, URL('default', 'manage_event_levels'), []),
+    (T('Manage Durations'), False, URL('default', 'manage_durations'), [])
 ]
 
 DEVELOPMENT_MENU = False

@@ -137,33 +137,51 @@ auth.settings.reset_password_requires_verification = True
 # auth.enable_record_versioning(db)
 
 db.define_table('medicines',
-                Field('medicine_name', 'string', length=40, required=True),
-                format = '%(medicine_name)s',
+                Field('medicine', 'string', length=40, required=True),
+                Field('dosage', 'string', length=40, required=True),
+                format = '%(medicine)s')
+
+db.define_table('bristol_scales',
+                Field('bristol_scale', 'string', length=60, required=True),
+                format='%(bristol_scale)s',
+                )
+
+db.define_table('event_types',
+                Field('event_type', 'string', length=40, required=True),
+                format='%(event_type)s',
+                )
+
+db.define_table('event_levels',
+                Field('event_level', 'string', length=40, required=True),
+                format='%(event_level)s',
+                )
+
+db.define_table('durations',
+                Field('duration', 'string', length=10, required=True),
+                format='%(duration)s',
                 )
 
 db.define_table('events',
                 Field('event_time', 'datetime', default = request.now, update = request.now,
                     requires=IS_DATETIME(format=('%m-%d-%Y %H:%M'), timezone=pytz.timezone(user_timezone))),
-                Field('event_type', 'string', requires=IS_IN_SET(['', 'Blood Pressure', 'Headache', 'Medicine', 'Mood', 'Nausea',
-                                                        'Pain', 'Sleep Duration', 'Stool', 'Weight']), default=''),
-                Field('event_level', 'string', requires=IS_EMPTY_OR(IS_IN_SET(['', '0 - Pain Free', '1 - Minor Annoyance', '2 - Moderate Annoyance', '3 - Distracting',
-                                                                                   '4- Can Be Ignored', '5 - Unable To Ignore', '6 - Difficult To Focus', '7 - Unable To Sleep',
-                                                                                   '8 - Physical Activity Severely Limited', '9 - Almost Unbearable', '10 - Unbearable'])),
-                                                                                   default='', represent=lambda v, r: '' if v is None else v),
-                Field('bristol_scale', 'string', requires=IS_EMPTY_OR(IS_IN_SET(['', 'Type 1 - Separate hard lumps', 'Type 2 - Lumpy and sausage like',
-                                                                     'Type 3 - A sausage shape with cracks in the surface', 'Type 4 - Like a smooth, soft sausage',
-                                                                     'Type 5 - Soft blobs with clear-cut edges', 'Type 6 - Mushy consistency with ragged edges',
-                                                                     'Type 7 - Liquid consistency with no solid pieces'])), default='', represent=lambda v, r: '' if v is None else v),
+                Field('event_type', 'reference event_types',
+                      requires=IS_EMPTY_OR(IS_IN_DB(db, db.event_types.id, '%(event_type)s')),
+                      represent=lambda v, r: '' if v is None else v.event_type),
+                Field('event_level', 'reference event_levels',
+                      requires=IS_EMPTY_OR(IS_IN_DB(db, db.event_levels.id, '%(event_level)s')),
+                      represent=lambda v, r: '' if v is None else v.event_level),
+                Field('bristol_scale', 'reference bristol_scales',
+                      requires=IS_EMPTY_OR(IS_IN_DB(db, db.bristol_scales.id, '%(bristol_scale)s')),
+                      represent=lambda v, r: '' if v is None else v.bristol_scale),
                 Field('systolic', 'integer', length=3, required=False, represent=lambda v, r: '' if v is 0 else v),
                 Field('diastolic', 'integer', length=3, required=False, represent=lambda v, r: '' if v is 0 else v),
                 Field('pulse', 'integer', length=3, required=False, represent=lambda v, r: '' if v is 0 else v),
-                Field('medicine', 'reference medicines', requires = IS_EMPTY_OR(IS_IN_DB(db, db.medicines.id, '%(medicine_name)s')),  represent=lambda v, r: '' if v is None else v.medicine_name),
-                Field('dosage', 'string', length=10, required=False, default='', represent=lambda v, r: '' if v is None else v),
+                Field('medicine', 'reference medicines',
+                      requires=IS_EMPTY_OR(IS_IN_DB(db, db.medicines.id, '%(medicine)s')),
+                      represent=lambda v, r: '' if v is None else v.medicine),
                 Field('lbs', 'double', required=False, represent=lambda v, r: '' if v is 0.00 else v),
-                Field('duration', 'string', requires=IS_EMPTY_OR(IS_IN_SET(['', ':15', ':30', ':45', '1:00', '1:15', '1:30', '1:45', '2:00', '2:15', '2:30', '2:45', '3:00',
-                                                                            '3:15', '3:30', '3:45', '4:00', '4:15', '4:30', '4:45', '5:00', '5:15', '5:30', '5:45', '6:00',
-                                                                            '6:15', '6:30', '6:45', '7:00', '7:15', '7:30', '7:45', '8:00', 'All Day'])), default='',
-                                                                            represent=lambda v, r: '' if v is None else v),
+                Field('duration', 'reference durations', requires=IS_EMPTY_OR(IS_IN_DB(db, db.durations.id, '%(duration)s')),
+                      represent=lambda v, r: '' if v is None else v.duration),
                 Field('note', 'text', required=False, default='', represent=lambda v, r: '' if v is None else v)
                )
 
