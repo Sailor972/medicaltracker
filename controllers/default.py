@@ -19,7 +19,6 @@ def index():
     if you need a simple wiki simply replace the two lines below with:
     return auth.wiki()
     """
-    response.flash = T("Hello World")
     return dict(message=T('Welcome to web2py!'))
 
 
@@ -73,15 +72,15 @@ def manage_events():
         redirect(URL('edit_event', args=[request.args(2)]))
     form = SQLFORM.grid(db.events, searchable=True, editable=True, deletable=True, details=False,
                              create=True, paginate=20, maxtextlength=60, fields=[db.events.event_time,
-                                                                                 db.events.event_type,
-                                                                                 db.events.event_level,
-                                                                                 db.events.bristol_scale,
+                                                                                 db.events.e_type,
+                                                                                 db.events.e_level,
+                                                                                 db.events.b_scale,
                                                                                  db.events.systolic,
                                                                                  db.events.diastolic,
                                                                                  db.events.pulse,
-                                                                                 db.events.medicine,
+                                                                                 db.events.medicine_name,
                                                                                  db.events.lbs,
-                                                                                 db.events.duration,
+                                                                                 db.events.duration_time,
                                                                                  db.events.note],
                              orderby=~db.events.event_time)
     return dict(form=form)
@@ -89,24 +88,24 @@ def manage_events():
 
 @auth.requires_login()
 def new_event():
-    db.events.systolic.show_if = (db.events.event_type == 1)
-    db.events.diastolic.show_if = (db.events.event_type == 1)
-    db.events.pulse.show_if = (db.events.event_type == 1)
-    db.events.medicine.show_if = (db.events.event_type == 3)
-    db.events.event_level.show_if = (db.events.event_type.belongs(4, 2, 5, 6))
-    db.events.duration.show_if = (db.events.event_type.belongs(2, 4, 5, 6, 7))
-    db.events.bristol_scale.show_if = (db.events.event_type == 8)
-    db.events.lbs.show_if = (db.events.event_type == 9)
+    db.events.systolic.show_if = (db.events.e_type == 1)
+    db.events.diastolic.show_if = (db.events.e_type == 1)
+    db.events.pulse.show_if = (db.events.e_type == 1)
+    db.events.medicine_name.show_if = (db.events.e_type == 3)
+    db.events.e_level.show_if = (db.events.e_type.belongs(4, 2, 5, 6))
+    db.events.duration_time.show_if = (db.events.e_type.belongs(2, 4, 5, 6, 7))
+    db.events.b_scale.show_if = (db.events.e_type == 8)
+    db.events.lbs.show_if = (db.events.e_type == 9)
     form = SQLFORM(db.events, fields=["event_time",
-                                      "event_type",
-                                      "event_level",
-                                      "bristol_scale",
+                                      "e_type",
+                                      "e_level",
+                                      "b_scale",
                                       "systolic",
                                       "diastolic",
                                       "pulse",
-                                      "medicine",
+                                      "medicine_name",
                                       "lbs",
-                                      "duration",
+                                      "duration_time",
                                       "note"])
     if form.process().accepted:
         response.flash = 'Thanks for filling out the form'
@@ -116,25 +115,25 @@ def new_event():
 
 @auth.requires_login()
 def edit_event():
-    this_event = db.events(db.events.id==request.args(0,cast=int))
-    db.events.systolic.show_if = (db.events.event_type == 1)
-    db.events.diastolic.show_if = (db.events.event_type == 1)
-    db.events.pulse.show_if = (db.events.event_type == 1)
-    db.events.medicine.show_if = (db.events.event_type == 3)
-    db.events.event_level.show_if = (db.events.event_type.belongs(4, 2, 5, 6))
-    db.events.duration.show_if = (db.events.event_type.belongs(2, 4, 5, 6, 7))
-    db.events.bristol_scale.show_if = (db.events.event_type == 8)
-    db.events.lbs.show_if = (db.events.event_type == 9)
+    this_event = db.event_types(db.events.id==request.args(0,cast=int))
+    db.events.systolic.show_if = (db.events.e_type == 1)
+    db.events.diastolic.show_if = (db.events.e_type == 1)
+    db.events.pulse.show_if = (db.events.e_type == 1)
+    db.events.medicine_name.show_if = (db.events.e_type == 3)
+    db.events.e_level.show_if = (db.events.e_type.belongs(4, 2, 5, 6))
+    db.events.duration_time.show_if = (db.events.e_type.belongs(2, 4, 5, 6, 7))
+    db.events.b_scale.show_if = (db.events.e_type == 8)
+    db.events.lbs.show_if = (db.events.e_type == 9)
     form=SQLFORM(db.events, this_event, fields=["event_time",
-                                                "event_type",
-                                                "event_level",
-                                                "bristol_scale",
+                                                "e_type",
+                                                "e_level",
+                                                "b_scale",
                                                 "systolic",
                                                 "diastolic",
                                                 "pulse",
-                                                "medicine",
+                                                "medicine_name",
                                                 "lbs",
-                                                "duration",
+                                                "duration_time",
                                                 "note"])
     if form.process().accepted:
         response.flash='Thanks for editing the form'
@@ -149,15 +148,15 @@ def manage_medicines():
     elif 'edit' in request.args:
         redirect(URL('edit_medicine', args=[request.args(2)]))
     form = SQLFORM.grid(db.medicines, searchable=True, editable=True, deletable=True, details=False,
-                             create=True, paginate=20, maxtextlength=60, fields=[db.medicines.medicine,
+                             create=True, paginate=20, maxtextlength=60, fields=[db.medicines.medicine_name,
                                                                                  db.medicines.dosage],
-                             orderby=db.medicines.medicine)
+                             orderby=db.medicines.medicine_name)
     return dict(form=form)
 
 
 @auth.requires_login()
 def new_medicine():
-    form = SQLFORM(db.medicines, fields=["medicine",
+    form = SQLFORM(db.medicines, fields=["medicine_name",
                                          "dosage"])
     if form.process().accepted:
         response.flash = 'Thanks for filling out the form'
@@ -168,7 +167,7 @@ def new_medicine():
 @auth.requires_login()
 def edit_medicine():
     this_medicine = db.medicines(db.medicines.id==request.args(0,cast=int))
-    form=SQLFORM(db.medicines, this_medicine, fields=["medicine",
+    form=SQLFORM(db.medicines, this_medicine, fields=["medicine_name",
                                                       "dosage"])
     if form.process().accepted:
         response.flash='Thanks for editing the form'
@@ -183,14 +182,14 @@ def manage_bristol_scales():
     elif 'edit' in request.args:
         redirect(URL('edit_bristol_scale', args=[request.args(2)]))
     form = SQLFORM.grid(db.bristol_scales, searchable=True, editable=True, deletable=True, details=False,
-                             create=True, paginate=20, maxtextlength=60, fields=[db.bristol_scales.bristol_scale],
-                             orderby=db.bristol_scales.bristol_scale)
+                             create=True, paginate=20, maxtextlength=60, fields=[db.bristol_scales.b_scale],
+                             orderby=db.bristol_scales.b_scale)
     return dict(form=form)
 
 
 @auth.requires_login()
 def new_bristol_scale():
-    form = SQLFORM(db.bristol_scales, fields=["bristol_scale"])
+    form = SQLFORM(db.bristol_scales, fields=["b_scale"])
     if form.process().accepted:
         response.flash = 'Thanks for filling out the form'
         redirect(URL('manage_bristol_scales'))
@@ -200,7 +199,7 @@ def new_bristol_scale():
 @auth.requires_login()
 def edit_bristol_scale():
     this_bristol_scale = db.bristol_scales(db.bristol_scales.id==request.args(0,cast=int))
-    form=SQLFORM(db.bristol_scales, this_bristol_scale, fields=["bristol_scale"])
+    form=SQLFORM(db.bristol_scales, this_bristol_scale, fields=["b_scale"])
     if form.process().accepted:
         response.flash='Thanks for editing the form'
         redirect(URL('manage_bristol_scales'))
@@ -213,14 +212,14 @@ def manage_event_types():
     elif 'edit' in request.args:
         redirect(URL('edit_event_type', args=[request.args(2)]))
     form = SQLFORM.grid(db.event_types, searchable=True, editable=True, deletable=True, details=False,
-                             create=True, paginate=20, maxtextlength=60, fields=[db.event_types.event_type],
-                             orderby=db.event_types.event_type)
+                             create=True, paginate=20, maxtextlength=60, fields=[db.event_types.e_type],
+                             orderby=db.event_types.e_type)
     return dict(form=form)
 
 
 @auth.requires_login()
 def new_event_type():
-    form = SQLFORM(db.event_types, fields=["event_type"])
+    form = SQLFORM(db.event_types, fields=["e_type"])
     if form.process().accepted:
         response.flash = 'Thanks for filling out the form'
         redirect(URL('manage_event_types'))
@@ -230,7 +229,7 @@ def new_event_type():
 @auth.requires_login()
 def edit_event_type():
     this_event_type = db.event_types(db.event_types.id==request.args(0,cast=int))
-    form=SQLFORM(db.event_types, this_event_type, fields=["event_type"])
+    form=SQLFORM(db.event_types, this_event_type, fields=["e_type"])
     if form.process().accepted:
         response.flash='Thanks for editing the form'
         redirect(URL('manage_event_types'))
@@ -243,14 +242,14 @@ def manage_event_levels():
     elif 'edit' in request.args:
         redirect(URL('edit_event_level', args=[request.args(2)]))
     form = SQLFORM.grid(db.event_levels, searchable=True, editable=True, deletable=True, details=False,
-                             create=True, paginate=20, maxtextlength=60, fields=[db.event_levels.event_level],
-                             orderby=db.event_levels.event_level)
+                             create=True, paginate=20, maxtextlength=60, fields=[db.event_levels.e_level],
+                             orderby=db.event_levels.e_level)
     return dict(form=form)
 
 
 @auth.requires_login()
 def new_event_level():
-    form = SQLFORM(db.event_levels, fields=["event_level"])
+    form = SQLFORM(db.event_levels, fields=["e_level"])
     if form.process().accepted:
         response.flash = 'Thanks for filling out the form'
         redirect(URL('manage_event_levels'))
@@ -260,7 +259,7 @@ def new_event_level():
 @auth.requires_login()
 def edit_event_level():
     this_event_level = db.event_levels(db.event_levels.id==request.args(0,cast=int))
-    form=SQLFORM(db.event_levels, this_event_level, fields=["event_level"])
+    form=SQLFORM(db.event_levels, this_event_level, fields=["e_level"])
     if form.process().accepted:
         response.flash='Thanks for editing the form'
         redirect(URL('manage_event_levels'))
@@ -274,14 +273,14 @@ def manage_durations():
     elif 'edit' in request.args:
         redirect(URL('edit_duration', args=[request.args(2)]))
     form = SQLFORM.grid(db.durations, searchable=True, editable=True, deletable=True, details=False,
-                             create=True, paginate=20, maxtextlength=60, fields=[db.durations.duration],
-                             orderby=db.durations.duration)
+                             create=True, paginate=20, maxtextlength=60, fields=[db.durations.duration_time],
+                             orderby=db.durations.duration_time)
     return dict(form=form)
 
 
 @auth.requires_login()
 def new_duration():
-    form = SQLFORM(db.durations, fields=["duration"])
+    form = SQLFORM(db.durations, fields=["duration_time"])
     if form.process().accepted:
         response.flash = 'Thanks for filling out the form'
         redirect(URL('manage_durations'))
@@ -291,7 +290,7 @@ def new_duration():
 @auth.requires_login()
 def edit_duration():
     this_duration = db.durations(db.durations.id==request.args(0,cast=int))
-    form=SQLFORM(db.durations, this_duration, fields=["duration"])
+    form=SQLFORM(db.durations, this_duration, fields=["duration_time"])
     if form.process().accepted:
         response.flash='Thanks for editing the form'
         redirect(URL('manage_durations'))

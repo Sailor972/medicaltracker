@@ -137,53 +137,56 @@ auth.settings.reset_password_requires_verification = True
 # auth.enable_record_versioning(db)
 
 db.define_table('medicines',
-                Field('medicine', 'string', length=40, required=True),
+                Field('medicine_name', 'string', length=40, required=True),
                 Field('dosage', 'string', length=40, required=True),
-                format = '%(medicine)s')
+                format = '%(medicine_name)s')
 
 db.define_table('bristol_scales',
-                Field('bristol_scale', 'string', length=60, required=True),
-                format='%(bristol_scale)s',
+                Field('b_scale', 'string', length=60, required=True),
+                format='%(b_scale)s',
                 )
 
 db.define_table('event_types',
-                Field('event_type', 'string', length=40, required=True),
-                format='%(event_type)s',
+                Field('e_type', 'string', length=40, required=True),
+                format='%(e_type)s',
                 )
 
 db.define_table('event_levels',
-                Field('event_level', 'string', length=40, required=True),
-                format='%(event_level)s',
+                Field('e_level', 'string', length=40, required=True),
+                format='%(e_level)s',
                 )
 
 db.define_table('durations',
-                Field('duration', 'string', length=10, required=True),
-                format='%(duration)s',
+                Field('duration_time', 'string', length=10, required=True),
+                format='%(duration_time)s',
                 )
 
 db.define_table('events',
                 Field('event_time', 'datetime', default = request.now, update = request.now,
                     requires=IS_DATETIME(format=('%m-%d-%Y %H:%M'), timezone=pytz.timezone(user_timezone))),
-                Field('event_type', 'reference event_types',
-                      requires=IS_EMPTY_OR(IS_IN_DB(db, db.event_types.id, '%(event_type)s')),
-                      represent=lambda v, r: '' if v is None else v.event_type),
-                Field('event_level', 'reference event_levels',
-                      requires=IS_EMPTY_OR(IS_IN_DB(db, db.event_levels.id, '%(event_level)s')),
-                      represent=lambda v, r: '' if v is None else v.event_level),
-                Field('bristol_scale', 'reference bristol_scales',
-                      requires=IS_EMPTY_OR(IS_IN_DB(db, db.bristol_scales.id, '%(bristol_scale)s')),
-                      represent=lambda v, r: '' if v is None else v.bristol_scale),
+                Field('e_type', 'reference event_types',
+                      requires=IS_EMPTY_OR(IS_IN_DB(db, db.event_types.id, '%(e_type)s')),
+                      represent=lambda v, r: '' if v is None else v.e_type),
+                Field('e_level', 'reference event_levels',
+                      requires=IS_EMPTY_OR(IS_IN_DB(db, db.event_levels.id, '%(e_level)s')),
+                      represent=lambda v, r: '' if v is None else v.e_level),
+                Field('b_scale', 'reference bristol_scales',
+                      requires=IS_EMPTY_OR(IS_IN_DB(db, db.bristol_scales.id, '%(b_scale)s')),
+                      represent=lambda v, r: '' if v is None else v.b_scale),
                 Field('systolic', 'integer', length=3, required=False, represent=lambda v, r: '' if v is 0 else v),
                 Field('diastolic', 'integer', length=3, required=False, represent=lambda v, r: '' if v is 0 else v),
                 Field('pulse', 'integer', length=3, required=False, represent=lambda v, r: '' if v is 0 else v),
-                Field('medicine', 'reference medicines',
-                      requires=IS_EMPTY_OR(IS_IN_DB(db, db.medicines.id, '%(medicine)s')),
-                      represent=lambda v, r: '' if v is None else v.medicine),
+                Field('medicine_name', 'reference medicines', requires=IS_EMPTY_OR(IS_IN_DB(db, db.medicines.id, '%(medicine_name)s')),
+                      represent=lambda v, r: '' if v is None else v.medicine_name),
                 Field('lbs', 'double', required=False, represent=lambda v, r: '' if v is 0.00 else v),
-                Field('duration', 'reference durations', requires=IS_EMPTY_OR(IS_IN_DB(db, db.durations.id, '%(duration)s')),
-                      represent=lambda v, r: '' if v is None else v.duration),
+                Field('duration_time', 'reference durations', requires=IS_EMPTY_OR(IS_IN_DB(db, db.durations.id, '%(duration_time)s')),
+                      represent=lambda v, r: '' if v is None else v.duration_time),
                 Field('note', 'text', required=False, default='', represent=lambda v, r: '' if v is None else v)
                )
 
 db.medicines.id.readable = False
+db.bristol_scales.id.readable = False
+db.event_types.id.readable = False
+db.event_levels.id.readable = False
+db.durations.id.readable = False
 db.events.id.readable = False
