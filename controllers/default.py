@@ -93,7 +93,7 @@ def new_event():
     db.events.pulse.show_if = (db.events.e_type == 1)
     db.events.medicine_name.show_if = (db.events.e_type == 3)
     db.events.e_level.show_if = (db.events.e_type.belongs(4, 2, 5, 6))
-    db.events.duration_time.show_if = (db.events.e_type.belongs(2, 4, 5, 6, 7, 11))
+    db.events.duration_time.show_if = (db.events.e_type.belongs(2, 4, 5, 6, 7, 10))
     db.events.b_scale.show_if = (db.events.e_type == 8)
     db.events.lbs.show_if = (db.events.e_type == 9)
     form = SQLFORM(db.events, fields=["event_time",
@@ -121,7 +121,7 @@ def edit_event():
     db.events.pulse.show_if = (db.events.e_type == 1)
     db.events.medicine_name.show_if = (db.events.e_type == 3)
     db.events.e_level.show_if = (db.events.e_type.belongs(4, 2, 5, 6))
-    db.events.duration_time.show_if = (db.events.e_type.belongs(2, 4, 5, 6, 7, 11))
+    db.events.duration_time.show_if = (db.events.e_type.belongs(2, 4, 5, 6, 7, 10))
     db.events.b_scale.show_if = (db.events.e_type == 8)
     db.events.lbs.show_if = (db.events.e_type == 9)
     form=SQLFORM(db.events, this_event, fields=["event_time",
