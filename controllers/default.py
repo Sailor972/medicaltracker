@@ -1,4 +1,4 @@
-from plugin_timezone import fast_tz_detector
+from pytz import all_timezones_set
 
 # -*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
@@ -60,9 +60,14 @@ def call():
     return service()
 
 
-def detect_timezone():
-    tz = fast_tz_detector()
-    return dict(tz=tz)
+def define_timezone():
+    """Call ajax to determine user timezone"""
+
+    tz_name = request.vars.name
+
+    if tz_name in all_timezones_set:
+        session.user_timezone = tz_name
+
 
 @auth.requires_login()
 def manage_events():

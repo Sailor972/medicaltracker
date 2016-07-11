@@ -1,7 +1,7 @@
-import pytz
-from gluon.tools import prettydate
+from pytz import timezone
 
-user_timezone = session.plugin_timezone_tx or 'UTC'
+timezone_user = session.user_timezone or timezone('UTC')
+timezone_is_unknown = session.user_timezone is None
 
 # -*- coding: utf-8 -*-
 
@@ -163,7 +163,7 @@ db.define_table('durations',
 
 db.define_table('events',
                 Field('event_time', 'datetime', default = request.now, update = request.now,
-                    requires=IS_DATETIME(format=('%m-%d-%Y %H:%M'), timezone=pytz.timezone(user_timezone))),
+                    requires=IS_DATETIME(format=('%m-%d-%Y %H:%M'), timezone = pytz.timezone(timezone_user))),
                 Field('e_type', 'reference event_types',
                       requires=IS_EMPTY_OR(IS_IN_DB(db, db.event_types.id, '%(e_type)s')),
                       represent=lambda v, r: '' if v is None else v.e_type),

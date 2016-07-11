@@ -9,3 +9,12 @@
         <p class="lead">Inital release.</p>
     </div>
 </div>
+
+{{if timezone_is_unknown: }}
+<script>
+  $(function() {
+    var tz_name = jstz.determine();
+    $.get("{{=URL('default', 'define_timezone')}}", tz_name);
+  });
+</script>
+
