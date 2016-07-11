@@ -62,9 +62,7 @@ def call():
 
 def define_timezone():
     """Call ajax to determine user timezone"""
-
     tz_name = request.vars.name
-
     if tz_name in all_timezones_set:
         session.user_timezone = tz_name
 
